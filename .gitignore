@@ -1,3 +1,4 @@
-/docs/progress-logs/template.md
-/docs/progress-logs/schedule.md
+/docs/progress/template.md
+/docs/progress/schedule.md
 *.synctex.gz
+.vscode
