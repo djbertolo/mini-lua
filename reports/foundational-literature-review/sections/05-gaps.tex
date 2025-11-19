@@ -1,0 +1,28 @@
+%!TEX root = ../main.tex
+
+\section{Gaps in Existing Literature / Motivation for the Project}
+
+\subsection{Common Limitations in Existing Work}
+Amongst the reviewed existing work, several common limitations can be identified that highlight the compromises made in the design of type inference systems for Lua-like languages.
+\begin{itemize}
+	\item \textbf{Reliance on Annotations:} Many existing systems, such as Typed Lua and Teal, rely heavily on explicit type annotations to achieve soundness and consistency in their type systems \cite{Maidl:2014:TLO:2617548.2617553}. This reliance on annotations can lead to increased verbosity and reduced flexibility, as developers must explicitly define types for variables and expressions. This requirement can be particularly burdensome in large codebases or when working with complex data structures.
+
+	\item \textbf{Limited Type Inference Capabilities:} Some systems, such as Luau, have limitations in their type inference capabilities, particularly when it comes to inferring types in the presence of mutable state and dynamic features \cite{Brown:2021:GOL:3486606.3486770}. For example, Luau is unable to infer the type of \verb|self| within methods of tables (objects) without an explicit type annotation. These limitations can lead to situations where developers must resort to annotations or workarounds to achieve the desired type safety.
+
+	\item \textbf{Trade-offs Between Soundness and Usability:} Many existing systems make trade-offs between soundness and usability, prioritizing performance and developer experience over theoretical soundness and completeness \cite{Brown:2021:GOL:3486606.3486770}. While these trade-offs can lead to more practical and usable type systems, they can also result in situations where type errors are not caught until runtime or where the type system is unable to accurately infer types in certain contexts.
+\end{itemize}
+
+\subsection{Cause for Compromises}
+The compromises observed in existing type inference systems for Lua-like languages can be attributed to several factors:
+\begin{itemize}
+	\item \textbf{Dynamic Features of Lua:} The dynamic features of Lua, such as dynamic table structures and a mutable global state, introduce significant complexity for type inference \cite{Lin2015OperationalSF}. These features make it difficult to accurately infer types based on usage and context, leading to limitations in type inference capabilities.
+
+	\item \textbf{Imperative Programming Paradigm:} Lua's imperative programming paradigm, which emphasizes mutable state and control flow constructs, further complicates type inference. The mutability of data means that variables and expressions can change their type throughout their lifetime, making it more challenging to infer types accurately.
+
+	\item \textbf{Performance Considerations:} Many existing systems prioritize performance and developer experience over theoretical soundness and completeness. This focus on practicality can lead to trade-offs that limit the capabilities of the type inference system.
+\end{itemize}
+
+\subsection{Compromises to be Made}
+Throughout every reviewed implementation of a type inference system for Lua-like languages, none have been able to accomplish both soundness and completeness while fully accommodating Lua's dynamic features and imperative programming paradigm. Completely absent in the reviewed implementations is the presence of a pure type inference system, such as Hindley-Milner. This absence highlights the inherent challenges and trade-offs involved in designing type inference systems for Lua-like languages. To effectively implement a type inference system for MiniLua, it is necessary to make certain compromises that balance soundness, completeness, and practicality.
+
+Teal demonstrates that statically typed Lua-like code can be effectively analyzed through the use of an annotation-driven type system, but at the cost of flexibility and fidelity to Lua's core design. Additionally, it demonstrates that the compromise of limiting dynamic features does not necessarily debilitate the language's usability for its intended purpose. Lua claims to be a multi-paradigm language, but its core design and usage patterns are primarily imperative. By reducing the use of dynamic features and mutable states, a subset of Lua can be defined to act as a functional programming language that exists for solutions that can be depicted deterministically. This reduction in complexity maintains for a wide range of applications to be effectively developed, alongside maintaining one of the paradigms Lua is advertised to support. This new subset, MiniLua, with its functional programming focus, will allow for the implementation of a type inference system based on the Hindley-Milner type system. By focusing on a subset of Lua that retains its core syntax and semantics while reducing its complexity, it becomes possible to design a type inference system that can effectively analyze Lua-like code while achieving soundness and completeness.
