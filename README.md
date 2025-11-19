@@ -4,7 +4,7 @@ Author: Dominic Bertolo
 
 Institution: California State University, San Bernardino
 
-Topics: Compilers, Static Analysis, Systems Security, Programming Languages
+Topics: Compilers, Static Analysis, Programming Languages
 
 ---
 
