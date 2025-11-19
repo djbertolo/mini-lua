@@ -1,4 +1,6 @@
 /docs/progress/template.md
 /docs/progress/schedule.md
 *.synctex.gz
+*.bbl
 .vscode
+.DS_Store
