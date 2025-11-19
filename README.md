@@ -1,6 +1,7 @@
 # MiniLua: A Static Type Inference Engine for a Lua-Like Language
 
 Author: Dominic Bertolo
+
 Institution: California State University, San Bernardino
 
 Topics: Compilers, Static Analysis, Systems Security, Programming Languages
@@ -32,6 +33,7 @@ The project aims to involve:
 ## Key Features
 
 MiniLua Language
+
 A simplified subset of Lua that supports:
 - Variables & Assignment
 - Arithmetic & boolean expressions
@@ -42,6 +44,7 @@ A simplified subset of Lua that supports:
 - Return statements
 
 Static Type Inference
+
 The type engine infers:
 - Primitive types
 - Function signatures
@@ -50,6 +53,7 @@ The type engine infers:
 - Type variable propagation
 
 Error Detection
+
 The system detects:
 - Type mismatches
 - Invalid operations
