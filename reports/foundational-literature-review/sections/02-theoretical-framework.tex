@@ -1,0 +1,29 @@
+%!TEX root = ../main.tex
+
+% 2. Theoretical Framework
+\section{Theoretical Framework}
+
+% 2.1 Hindley-Milner Type System
+\subsection{The Hindley-Milner Standard}
+
+The project utilizes the Hindley-Milner (HM) type system as its foundational mathematical framework. HM allows for the automatic deduction of the most general type (principal type) of expressions without requiring explicit type annotations \cite{Hindley:1969:PTS}. This effectively separates it from the "gradual" or "optional" typing systems found in industry standards like Luau, aiming instead for total static verification.
+
+The HM system relies on two critical properties that MiniLua aims to replicate:
+\begin{enumerate}
+    \item \textbf{Soundness:} Guaranteeing that well-typed programs cannot produce type errors at runtime (often summarized by the slogan "Well-typed programs cannot go wrong") \cite{Pierce:2002:TPL}.
+    \item \textbf{Let-Polymorphism:} Enabling functions to operate generically over different types, provided the polymorphism is introduced via a \texttt{let}-binding (or in Lua's case, a \texttt{local} declaration) \cite{Damas:1982:PTS:582153.582176}.
+\end{enumerate}
+
+While standard Lua allows variables to change types dynamically (e.g., \texttt{local x = 5; x = "hello"}), this behavior is incompatible with the principal type property of HM. Therefore, MiniLua adopts a strict discipline where variables are immutable in their type assignment, leveraging HM's inference capabilities to maintain flexibility without sacrificing the rigorous safety guarantees defined by Damas and Milner.
+
+% 2.2 Constraint Generation and Unification
+\subsection{Constraint Generation and Unification}
+
+Rather than using the original "Algorithm W" which interleaves inference and substitution, this project adopts the two-phase architecture proposed by Wand (1987). This approach separates the inference process into two distinct stages: \textbf{Constraint Generation} and \textbf{Constraint Solving} (Unification) \cite{Wand:1987:SAP:41625.41630}.
+
+\begin{itemize}
+    \item \textbf{Constraint Generation:} The type checker traverses the Abstract Syntax Tree (AST) of the MiniLua program. For every expression, it generates an equation relating type variables. For example, a function call $f(x)$ generates a constraint $T_f = T_x \rightarrow T_{result}$. As noted by Aiken and Murphy, this phase is purely syntactic and independent of the solving logic \cite{Aiken:1991:STI:99583.99611}.
+    \item \textbf{Unification:} The solver takes the set of constraints and attempts to find a substitution that satisfies all equations. This project will implement a variation of the Robinson unification algorithm to determine the Most General Unifier (MGU). As detailed in implementation guides by Gr\"aber, this phase is responsible for detecting type mismatches (e.g., trying to unify `int` with `string`) and reporting them to the user \cite{Graber:AWStepByStep}.
+\end{itemize}
+
+By adopting Wand's separation of concerns, the MiniLua type checker ensures that error reporting can be localized. If unification fails, the engine can identify exactly which constraint was violated, providing the developer with precise feedback—a feature often lacking in ad-hoc type systems.

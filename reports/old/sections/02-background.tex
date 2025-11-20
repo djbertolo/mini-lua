@@ -1,0 +1,118 @@
+%!TEX root = ../main.tex
+
+\section{Background: Static vs. Dynamic Typing, and Type Inference}
+
+This section provides the necessary background on static and dynamic typing, as well as type inference techniques relevant to the context of MiniLua.
+
+\subsection{Static vs. Dynamic Typing}
+
+The distinction between static and dynamic typing is primarily defined by when the type-checking is performed.
+
+\begin{itemize}
+	\item \textbf{Static Typing}: In a statically typed language, type-checking is performed at compile-time. During this process, variables are attributed to a specific type and these types along with their use-cases are verified before the program is executed. When the compiler encounters a type mismatch, or use cases that conflict with a variable's type, such as \verb |int x = 10; x = "hello"; |, the compiler will often raise a type error, preventing the program from compiling until the error is resolved. This approach prioritizes type safety and early error detection.
+	\item \textbf{Dynamic Typing}: In a dynamically typed language, type-checking is performed at runtime. Variables are bound to values instead of types, and the values themselves carry implicit type information. In many dynamically typed languages, a variable can often times be reassigned to a value that does not match the type of its previous value. For example, in Python, the following code is valid: \verb |x = 10; x = "hello"; |. The type of \verb |x| changes from an integer to a string without any compile-time errors. However, if an operation is performed that is incompatible with the current type of the variable, such as \verb |x + 5| when \verb |x| is a string, a runtime error will occur. The approach prioritizes flexibility and ease of use.
+\end{itemize}
+
+\subsection{What is Type Inference?}
+
+Type inference is the ability of a compiler to automatically determine the type of expression at compile-time without the need for explicit type annotations. Type inference algorithms do not exist in mutual exclusivity with either static or dynamic typing. They act as a feature layered on top of a type system, most commonly found in statically typed languages.
+\par
+An example of a statically typed language implementing a form of type inference is the Go programming language. Go is a statically typed language that allows for type inference through the use of the \verb |:=| operator. For example, in the following code snippet, the type of \verb |x| is inferred to be an integer based on the value assigned to it:
+
+
+\begin{verbatim}
+
+
+x := 10 // x is inferred to be of type int
+
+
+\end{verbatim}
+
+
+
+
+
+In this case, the compiler infers the type of \verb |x| to be an integer based on the value assigned to it, without requiring an explicit type declaration or annotation.
+\par
+Another example of statically typed language implementing type inference is the Haskell programming language. Haskell uses a powerful type inference algorithm called Hindley-Milner, which allows for the automatic deduction of types for expressions based on their usage and context within the code. For example, in the following Haskell code snippet, the type of the function \verb |add| is inferred to be \verb |Int → Int → Int| based on its definition:
+
+\begin{verbatim}
+add x y = x + y // add is inferred to be of type Int → Int → Int
+\end{verbatim}
+
+In this case, the compiler infers the type of \verb |add| to be a function that takes two integers as arguments and returns an integer, without requiring explicit type declaration or annotation.
+\par
+An example of a dynamically typed language implementing a form of type inference is TypeScript, a superset of JavaScript that adds static typing capabilities. TypeScript uses type inference to automatically deduce the types of variables and expressions based on their usage and context within the code. For example, in the following TypeScript code snippet, the type of \verb |x| is inferred to be a number based on the value assigned to it:
+
+\begin{verbatim}
+let x = 10; // x is inferred to be of type number
+\end{verbatim}
+
+In this case, the TypeScript compiler infers the type of \verb |x| to be a number based on the value assigned to it, without requiring an explicit type declaration or annotation.
+
+\subsection{Approaches to Typing Dynamic Languages}
+
+Where it concerns dynamically typed languages, implementation of a type inference system is often approached through one of two main methodologies:
+\begin{enumerate}
+	\item \textbf{Algorithm-Based (Pure) Inference:} One of the most well-known algorithm-based typed inference systems is the Hindley-Milner type system, which is used in languages such as ML and Haskell. The goal is that types can be inferred through a set of rules and algorithms that analyze the structure and behavior of the code. In this approach, so long as code adheres to the rules and constraints defined by the type system, types can always be accurately inferred without the need for any additional type annotations or hints from the developer. Due to its derivation from formal logic and type theory, it is often considered to be theoretically sound, complete, and "pure". However, the strictness of rules and constraints necessary for this approach to function often limits its applications to many programming languages where their use cases and features demand more flexibility and less rigidity.
+	\item \textbf{Gradual / Optional Typing:} A modern and pragmatic approach that has achieved significant adoption in recent years is the use of gradual typing, also known as optional typing. Popular systems such as TypeScript, Sorbet, and Luau are gradual type systems. This approach is a compromise compared to pure algorithm-based inference systems. It allows developers to optionally add type annotations to their code, individually selecting which sections of code should be forced to abide by the static type system. Most approaches of gradual typing implement this gradual or optional typing by providing a universal \texttt{any} type that can be used to annotate variables or expressions that should not be subject to type inference. This type then is considered generally compatible to any other type, resulting in the variable or expression being exempt from static type checking. The type can then be provided to values implicitly unless otherwise specified by a type annotation, or is provided to the developer as a type to be explicitly cast to a value or expression. The approach allows for a balance between flexibility of dynamic typing and the safety of static typing, enabling developers to incrementally adopt static typing case by case as needed.
+\end{enumerate}
+\subsection{Process of Type Inference: Constraints and Unification}
+Modern approaches to type inference often involve the use of constraint-based inferences that separate the process of type inference into two main phases: constraint generation and constraint solving (unification).
+\begin{itemize}
+	\item \textbf{Constraint Generation:} The type system algorithm traverses the abstract syntax tree (AST) of the code. During this traversal, for every snippet of code that can be analyzed for an attributed type, a variable is created to represent the type of that snippet. As the type system continues to traverse the AST, it generates a list of constraints that represent the relationship between the types of different snippets of code. For example, if a function is called with an argument, a constraint is generated that states that the type of the argument must be compatible with the type of the parameter defined in the function's signature.
+	\item \textbf{Constraint Solving (Unification):} After the traversal of the AST is complete, and all constraints have been generated, the type system then enters the constraint solving phase, often referred to as unification. During this unification phase, the type system attempts to find a corresponding language type for each type variable generated during the constraint generation phase that allows all the corresponding constraints to evaluate to true. If no mapping can be found that satisfies all constraints, a type error is raised. This error indicates that there exists use cases that result in a conflicting constraint that cannot be satisfied given any possible type assignment.
+\end{itemize}
+\par
+This process can be demonstrated with the following simple example in a Lua-like pseudocode:
+\begin{verbatim}
+function f(x)
+	return x + 1
+end
+result = f(5)
+\end{verbatim}
+The first step is to assign type variables to each expression:
+\begin{itemize}
+	\item \texttt{f}: $T_f$
+	\item \texttt{x}: $T_x$
+	\item \texttt{+}: $T_{+}$
+	\item \texttt{1}: $T_1$
+	\item \texttt{5}: $T_5$
+	\item \texttt{x + 1}: $T_{exp}$
+	\item \texttt{result}: $T_{result}$
+\end{itemize}
+\par
+The second step is to generate constraints based on the operations and function calls:
+\begin{itemize}
+	\item From the literal \texttt{1}, we have the constraint: $T_1 = \text{number}$
+	\item From the literal \texttt{5}, we have the constraint: $T_5 = \text{number}$
+	\item From the addition operation \texttt{x + 1}, we have the constraint: $T_{exp} = T_x + T_1$
+	\item From the function definition \texttt{function f(x)}, we have the constraint: $T_f = T_x \rightarrow T_{exp}$
+	\item From the function call \texttt{f(5)}, we have the constraint: $T_f = T_5 \rightarrow T_{exp}$
+	\item From the assignment \texttt{result = f(5)}, we have the constraint: $T_{result} = T_{exp}$
+\end{itemize}
+\par
+The third step is to solve the constraints through unification:
+\begin{itemize}
+	\item System
+	\begin{itemize}
+		\item $T_1 = \text{number}$
+		\item $T_5 = \text{number}$
+		\item $T_{exp} = \text{number}$
+		\item $T_{result} = \text{number}$
+	\end{itemize}
+
+	\item Solving
+	\begin{itemize}
+		\item Substitute $T_f$ from function definition into function call constraint: $T_x \rightarrow T_{exp} = T_5 \rightarrow T_{exp}$
+		\item Substitute $T_5$ with \text{number}: $T_x \rightarrow T_{exp} = \text{number} \rightarrow T_{exp}$
+	\end{itemize}
+\end{itemize}
+
+\textbf{Final Inferred Types}: The system has successfully inferred the following types:
+
+\begin{itemize}
+	\item \texttt{f}: $\text{number} \rightarrow \text{number}$
+	\item \texttt{x}: $\text{number}$
+	\item \texttt{result}: $\text{number}$
+\end{itemize}
